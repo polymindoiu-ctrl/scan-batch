@@ -283,13 +283,19 @@ async function stopScanner() {
 }
 
 function onScanSuccess(decodedText) {
+    // ===== DEBUG: Tampilkan hasil scan =====
+    console.log('📌 HASIL SCAN:', decodedText);
+    console.log('📌 PANJANG TEXT:', decodedText.length);
+    console.log('📌 KARAKTER:', decodedText.split('').map(c => c.charCodeAt(0)));
+    // =======================================
+    
     const itemNumber = decodedText.trim();
     
+    console.log('📌 SETELAH TRIM:', itemNumber);
+    console.log('📌 PANJANG SETELAH TRIM:', itemNumber.length);
+    
     if (itemNumber) {
-        // Berhenti scan dulu
         stopScanner();
-        // Fetch data
-        currentItemNumber = itemNumber;
         fetchItemData(itemNumber);
     } else {
         showError('QR Code tidak valid!');
