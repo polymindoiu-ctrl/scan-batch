@@ -1,0 +1,366 @@
+/* ===== RESET & BASE ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+    background: #f0f4f8;
+    min-height: 100vh;
+    padding: 16px;
+    color: #1a2332;
+}
+
+.container {
+    max-width: 600px;
+    margin: 0 auto;
+    background: #ffffff;
+    border-radius: 24px;
+    padding: 24px 20px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+}
+
+/* ===== HEADER ===== */
+header h1 {
+    font-size: 26px;
+    font-weight: 700;
+    color: #1a2332;
+    margin-bottom: 4px;
+}
+
+header .subtitle {
+    font-size: 14px;
+    color: #6b7a8f;
+    margin-bottom: 20px;
+}
+
+/* ===== SCANNER ===== */
+.scanner-wrapper {
+    position: relative;
+    background: #1a2332;
+    border-radius: 16px;
+    overflow: hidden;
+    min-height: 280px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#reader {
+    width: 100%;
+    min-height: 280px;
+}
+
+#reader video {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.scanner-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: rgba(255, 255, 255, 0.5);
+    text-align: center;
+    pointer-events: none;
+    user-select: none;
+}
+
+.scanner-icon {
+    font-size: 48px;
+    margin-bottom: 8px;
+}
+
+.scanner-overlay p {
+    font-size: 13px;
+    letter-spacing: 0.5px;
+}
+
+/* ===== BUTTONS ===== */
+.btn-group {
+    display: flex;
+    gap: 10px;
+    margin: 16px 0 12px 0;
+}
+
+.btn {
+    flex: 1;
+    padding: 14px 20px;
+    border: none;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+}
+
+.btn-primary {
+    background: #2563eb;
+    color: #ffffff;
+}
+
+.btn-primary:hover:not(:disabled) {
+    background: #1d4ed8;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+
+.btn-secondary {
+    background: #e5e7eb;
+    color: #1a2332;
+}
+
+.btn-secondary:hover:not(:disabled) {
+    background: #d1d5db;
+}
+
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+/* ===== ERROR ===== */
+.error {
+    background: #fee2e2;
+    color: #991b1b;
+    padding: 14px 16px;
+    border-radius: 12px;
+    margin: 12px 0;
+    font-size: 14px;
+    border-left: 4px solid #dc2626;
+}
+
+/* ===== LOADING ===== */
+.loading {
+    text-align: center;
+    padding: 24px 0;
+    color: #6b7a8f;
+}
+
+.spinner {
+    display: inline-block;
+    width: 32px;
+    height: 32px;
+    border: 3px solid #e5e7eb;
+    border-top: 3px solid #2563eb;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin-bottom: 12px;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ===== RESULT CARD ===== */
+.result-card {
+    background: #f8fafc;
+    border-radius: 16px;
+    padding: 20px;
+    margin-top: 20px;
+    border: 2px solid #e2e8f0;
+    animation: slideUp 0.4s ease;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.result-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+}
+
+.result-header h2 {
+    font-size: 17px;
+    font-weight: 700;
+    color: #1a2332;
+    flex: 1;
+    word-break: break-word;
+}
+
+.badge {
+    background: #2563eb;
+    color: #ffffff;
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+/* ===== INFO GRID ===== */
+.info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 16px 0;
+}
+
+.info-item {
+    background: #ffffff;
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+}
+
+.info-item .label {
+    font-size: 11px;
+    font-weight: 600;
+    color: #6b7a8f;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+}
+
+.info-item .value {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1a2332;
+    word-break: break-word;
+}
+
+.info-item.full-width {
+    grid-column: 1 / -1;
+}
+
+/* ===== HISTORY ===== */
+.history-section {
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 2px solid #e2e8f0;
+}
+
+.history-section h3 {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1a2332;
+    margin-bottom: 12px;
+}
+
+.history-table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.history-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    min-width: 280px;
+}
+
+.history-table thead {
+    background: #f1f5f9;
+}
+
+.history-table th {
+    text-align: left;
+    padding: 10px 14px;
+    font-weight: 600;
+    color: #475569;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.history-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid #e5e7eb;
+    color: #1a2332;
+}
+
+.history-table tbody tr:hover {
+    background: #f8fafc;
+}
+
+.history-table .text-center {
+    text-align: center;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 24px 0;
+    color: #6b7a8f;
+    font-size: 14px;
+}
+
+/* ===== FOOTER ===== */
+footer {
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid #e5e7eb;
+    text-align: center;
+    font-size: 12px;
+    color: #6b7a8f;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 480px) {
+    .container {
+        padding: 16px 12px;
+        border-radius: 16px;
+    }
+
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .btn {
+        font-size: 14px;
+        padding: 12px 16px;
+    }
+
+    .result-header h2 {
+        font-size: 15px;
+    }
+
+    .history-table {
+        font-size: 13px;
+    }
+
+    .history-table th,
+    .history-table td {
+        padding: 8px 10px;
+    }
+}
+
+@media (max-width: 380px) {
+    .scanner-wrapper {
+        min-height: 200px;
+    }
+
+    #reader {
+        min-height: 200px;
+    }
+
+    .btn-group {
+        flex-direction: column;
+    }
+
+    .badge {
+        font-size: 11px;
+        padding: 3px 10px;
+    }
+}

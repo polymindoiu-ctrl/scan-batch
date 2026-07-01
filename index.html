@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Scan QR - Inventory Audit</title>
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js">
+    </script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js">
+    </script>
+    
+    <!-- QR Scanner Library -->
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js">
+    </script>
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <h1>📷 Scan QR</h1>
+            <p class="subtitle">Scan untuk melihat data batch &amp; riwayat 30 hari</p>
+        </header>
+
+        <!-- Scanner Area -->
+        <div class="scanner-wrapper">
+            <div id="reader"></div>
+            <div class="scanner-overlay">
+                <div class="scanner-icon">⬜</div>
+                <p>Arahkan kamera ke QR Code</p>
+            </div>
+        </div>
+
+        <!-- Tombol Kontrol -->
+        <div class="btn-group">
+            <button class="btn btn-primary" id="startScanBtn">
+                ▶ Mulai Scan
+            </button>
+            <button class="btn btn-secondary" id="stopScanBtn" disabled>
+                ⏹ Stop
+            </button>
+        </div>
+
+        <!-- Error Message -->
+        <div id="error" class="error" style="display: none;"></div>
+
+        <!-- Loading -->
+        <div id="loading" class="loading" style="display: none;">
+            <div class="spinner"></div>
+            <p>Memuat data...</p>
+        </div>
+
+        <!-- Result Card -->
+        <div id="resultCard" class="result-card" style="display: none;">
+            <!-- Item Header -->
+            <div class="result-header">
+                <h2 id="itemNameDisplay">-</h2>
+                <span class="badge" id="itemNumberDisplay">-</span>
+            </div>
+
+            <!-- Info Grid -->
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="label">Batch Terakhir</div>
+                    <div class="value" id="batchDisplay">-</div>
+                </div>
+                <div class="info-item">
+                    <div class="label">Stok Terakhir</div>
+                    <div class="value" id="stokDisplay">-</div>
+                </div>
+                <div class="info-item full-width">
+                    <div class="label">Remark</div>
+                    <div class="value" id="remarkDisplay">-</div>
+                </div>
+                <div class="info-item full-width">
+                    <div class="label">Tanggal Update</div>
+                    <div class="value" id="tanggalDisplay">-</div>
+                </div>
+            </div>
+
+            <!-- History Section -->
+            <div class="history-section">
+                <h3>📊 Riwayat 30 Hari Terakhir</h3>
+                <div id="historyContent">
+                    <p class="empty-state">Belum ada data</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer>
+            <p>&copy; 2026 - Sistem Audit Inventory</p>
+        </footer>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="script.js"></script>
+</body>
+</html>
