@@ -6,7 +6,7 @@
 const firebaseConfig = {
   apiKey: "AIzaSyBn799uLE01yJO68bgvFY8bnuykUUByf74",
   authDomain: "ambil-data-dd0d1.firebaseapp.com",
-  databaseURL: "https://ambil-data-dd0d1-default-rtdb.asia-southeast1.firebasedatabase.app",
+  databaseURL: "https://ambil-data-dd0d1-default-rtdb.asia-southeast1.firebasedatabase.app/data_stok",
   projectId: "ambil-data-dd0d1",
   storageBucket: "ambil-data-dd0d1.firebasestorage.app",
   messagingSenderId: "107971509723",
