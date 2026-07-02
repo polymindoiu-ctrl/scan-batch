@@ -198,6 +198,12 @@ function displayItemData(data, itemNumber) {
     stokDisplay.textContent = data.stok ? data.stok + ' kg' : '-';
     remarkDisplay.textContent = data.remark || '-';
     tanggalDisplay.textContent = data.tanggal || '-';
+    
+    // Tambahkan badge "Terbaru" di samping tanggal
+    const tanggalLabel = document.querySelector('.tanggal-label');
+    if (tanggalLabel) {
+        tanggalLabel.innerHTML = `📅 Tanggal Update <span style="background: #2563eb; color: white; padding: 2px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; margin-left: 8px;">TERBARU</span>`;
+    }
 }
 
 function displayHistory(items) {
@@ -215,18 +221,23 @@ function displayHistory(items) {
                         <th>Tanggal</th>
                         <th>Batch</th>
                         <th>Stok</th>
+                        <th style="text-align: center;">Status</th>
                     </tr>
                 </thead>
                 <tbody>
     `;
     
-    items.forEach(item => {
+    items.forEach((item, index) => {
         const stok = item.stok ? item.stok + ' kg' : '-';
+        // Tandai data terbaru (index 0) dengan badge
+        const badge = index === 0 ? '<span style="background: #2563eb; color: white; padding: 2px 10px; border-radius: 12px; font-size: 11px; font-weight: 600;">TERBARU</span>' : '-';
+        
         html += `
-            <tr>
-                <td>${item.tanggal || '-'}</td>
+            <tr ${index === 0 ? 'style="background: #eff6ff;"' : ''}>
+                <td><strong>${item.tanggal || '-'}</strong></td>
                 <td>${item.batch || '-'}</td>
                 <td>${stok}</td>
+                <td style="text-align: center;">${badge}</td>
             </tr>
         `;
     });
@@ -237,13 +248,16 @@ function displayHistory(items) {
         </div>
     `;
     
-    // Tambahkan info jumlah data
+    // Tambahkan info jumlah data dan rentang tanggal
     const totalData = items.length;
-    const infoText = totalData === 30 ? 
-        'Menampilkan 30 data terakhir' : 
-        `Menampilkan ${totalData} data (semua data tersedia)`;
+    const firstDate = items[0]?.tanggal || '-';
+    const lastDate = items[items.length - 1]?.tanggal || '-';
     
-    html += `<p style="margin-top: 12px; font-size: 12px; color: #6b7a8f; text-align: center;">${infoText}</p>`;
+    const infoText = totalData === 30 ? 
+        `Menampilkan 30 data terakhir (${firstDate} s/d ${lastDate})` : 
+        `Menampilkan ${totalData} data (semua data tersedia) - (${firstDate} s/d ${lastDate})`;
+    
+    html += `<p style="margin-top: 12px; font-size: 12px; color: #6b7a8f; text-align: center;">📊 ${infoText}</p>`;
     
     historyContent.innerHTML = html;
 }
