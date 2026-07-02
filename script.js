@@ -126,7 +126,7 @@ async function fetchItemData(itemNumber) {
         const data = snapshot.val();
         
         if (!data) {
-            showError(`Item "${itemNumber}" tidak ada !`);
+            showError(`Item "${itemNumber}" tidak ditemukan!`);
             showLoading(false);
             return;
         }
@@ -146,7 +146,7 @@ async function fetchItemData(itemNumber) {
             console.warn('📌 Item tidak ditemukan. Target (normalized):', targetNormalized);
             console.warn('📌 Contoh itemnumber yang ada di DB:', 
                 allItems.slice(0, 10).map(i => i.itemnumber));
-            showError(`Item "${itemNumber}" tidak ditemukan!`);
+            showError(`Item "${itemNumber}" tidak ada!`);
             showLoading(false);
             return;
         }
