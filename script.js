@@ -102,17 +102,26 @@ function showLoading(show) {
 // 5. FIREBASE QUERY
 // ============================================
 
+// Normalisasi string untuk perbandingan: lowercase + hapus semua whitespace
+// (termasuk whitespace "aneh" seperti non-breaking space / zero-width space)
+function normalizeItemNumber(str) {
+    if (!str) return '';
+    return String(str)
+        .replace(/[\s\u200B-\u200D\uFEFF]/g, '') // hapus spasi & zero-width chars
+        .toLowerCase();
+}
+
 async function fetchItemData(itemNumber) {
     showLoading(true);
     resultCard.style.display = 'none';
     errorEl.style.display = 'none';
     
     try {
-        // Query semua data dengan itemnumber tertentu
-        const snapshot = await db.ref('/')
-            .orderByChild('itemnumber')
-            .equalTo(itemNumber)
-            .once('value');
+        const targetNormalized = normalizeItemNumber(itemNumber);
+        
+        // Ambil SEMUA data lalu filter manual (case-insensitive & toleran whitespace)
+        // Ini menggantikan query orderByChild().equalTo() yang exact-match & case-sensitive
+        const snapshot = await db.ref('/').once('value');
         
         const data = snapshot.val();
         
@@ -123,10 +132,24 @@ async function fetchItemData(itemNumber) {
         }
         
         // Konversi ke array
-        const items = Object.keys(data).map(key => ({
+        const allItems = Object.keys(data).map(key => ({
             id: key,
             ...data[key]
         }));
+        
+        // Filter berdasarkan itemnumber yang sudah dinormalisasi
+        const items = allItems.filter(item => 
+            normalizeItemNumber(item.itemnumber) === targetNormalized
+        );
+        
+        if (items.length === 0) {
+            console.warn('📌 Item tidak ditemukan. Target (normalized):', targetNormalized);
+            console.warn('📌 Contoh itemnumber yang ada di DB:', 
+                allItems.slice(0, 10).map(i => i.itemnumber));
+            showError(`Item "${itemNumber}" tidak ditemukan!`);
+            showLoading(false);
+            return;
+        }
         
         // Filter yang punya tanggal valid
         const validItems = items.filter(item => item.tanggal);
