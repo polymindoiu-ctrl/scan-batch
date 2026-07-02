@@ -238,7 +238,7 @@ function displayHistory(items) {
             <tr ${index === 0 ? 'style="background: #eff6ff;"' : ''}>
                 <td style="text-wrap: nowrap;"><strong>${item.tanggal || '-'}</strong></td>
                 <td>${item.batch || '-'}</td>
-                <td>${stok}</td>
+                <td style="text-wrap: nowrap;">${stok}</td>
                 <td style="text-align: center;">${badge}</td>
             </tr>
         `;
