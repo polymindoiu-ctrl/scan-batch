@@ -1,21 +1,17 @@
 // ============================================
 // 1. KONFIGURASI FIREBASE
 // ============================================
-// GANTI dengan data dari Firebase Console Anda!
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: "AIzaSyBn799uLE01yJO68bgvFY8bnuykUUByf74",
-  authDomain: "ambil-data-dd0d1.firebaseapp.com",
-  databaseURL: "https://ambil-data-dd0d1-default-rtdb.asia-southeast1.firebasedatabase.app", // ← TAMBAHKAN INI
-  projectId: "ambil-data-dd0d1",
-  storageBucket: "ambil-data-dd0d1.firebasestorage.app",
-  messagingSenderId: "107971509723",
-  appId: "1:107971509723:web:ad27240062a3d34e3c7bfe",
-  measurementId: "G-HS76ZXYJNJ"
+    apiKey: "AIzaSyBn799uLE01yJO68bgvFY8bnuykUUByf74",
+    authDomain: "ambil-data-dd0d1.firebaseapp.com",
+    databaseURL: "https://ambil-data-dd0d1-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "ambil-data-dd0d1",
+    storageBucket: "ambil-data-dd0d1.firebasestorage.app",
+    messagingSenderId: "107971509723",
+    appId: "1:107971509723:web:ad27240062a3d34e3c7bfe",
+    measurementId: "G-HS76ZXYJNJ"
 };
 
-// Inisialisasi Firebase
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
@@ -36,7 +32,6 @@ const errorEl = document.getElementById('error');
 const loadingEl = document.getElementById('loading');
 const resultCard = document.getElementById('resultCard');
 
-// Result elements
 const itemNameDisplay = document.getElementById('itemNameDisplay');
 const itemNumberDisplay = document.getElementById('itemNumberDisplay');
 const batchDisplay = document.getElementById('batchDisplay');
@@ -49,42 +44,55 @@ const historyContent = document.getElementById('historyContent');
 // 4. HELPER FUNCTIONS
 // ============================================
 
-// Konversi tanggal dd/mmm/yy ke Date object
+// Konversi tanggal ke Date object - SUPPORT FORMAT ISO (YYYY-MM-DD)
 function parseDateCustom(dateStr) {
     if (!dateStr) return new Date(0);
     
+    // Coba parse sebagai ISO format (YYYY-MM-DD)
+    const isoMatch = dateStr.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if (isoMatch) {
+        const year = parseInt(isoMatch[1]);
+        const month = parseInt(isoMatch[2]) - 1;
+        const day = parseInt(isoMatch[3]);
+        return new Date(year, month, day);
+    }
+    
+    // Fallback: dd/mmm/yy (format lama)
     const parts = dateStr.split('/');
-    if (parts.length !== 3) return new Date(0);
+    if (parts.length === 3) {
+        const day = parseInt(parts[0]);
+        const monthStr = parts[1].toLowerCase();
+        const year = parseInt(parts[2]) + 2000;
+        
+        const monthMap = {
+            'jan': 0, 'feb': 1, 'mar': 2, 'apr': 3, 'may': 4, 'jun': 5,
+            'jul': 6, 'aug': 7, 'sep': 8, 'oct': 9, 'nov': 10, 'dec': 11
+        };
+        
+        const month = monthMap[monthStr];
+        if (month !== undefined) {
+            return new Date(year, month, day);
+        }
+    }
     
-    const day = parseInt(parts[0]);
-    const monthStr = parts[1].toLowerCase();
-    const year = parseInt(parts[2]) + 2000;
+    // Last resort
+    const parsed = new Date(dateStr);
+    if (!isNaN(parsed.getTime())) {
+        return parsed;
+    }
     
-    const monthMap = {
-        'jan': 0, 'feb': 1, 'mar': 2, 'apr': 3, 'may': 4, 'jun': 5,
-        'jul': 6, 'aug': 7, 'sep': 8, 'oct': 9, 'nov': 10, 'dec': 11
-    };
-    
-    const month = monthMap[monthStr];
-    if (month === undefined) return new Date(0);
-    
-    return new Date(year, month, day);
+    return new Date(0);
 }
 
-// Format Date ke dd/mmm/yy
-function formatDateToCustom(date) {
+// Format Date ke YYYY-MM-DD (untuk display)
+function formatDateDisplay(date) {
     if (!date || isNaN(date.getTime())) return '-';
-    
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 
-                    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    const month = months[date.getMonth()];
-    const year = String(date.getFullYear()).slice(2);
-    
-    return `${day}/${month}/${year}`;
+    return `${year}-${month}-${day}`;
 }
 
-// Tampilkan error
 function showError(msg) {
     errorEl.textContent = '⚠️ ' + msg;
     errorEl.style.display = 'block';
@@ -93,23 +101,20 @@ function showError(msg) {
     }, 5000);
 }
 
-// Tampilkan loading
 function showLoading(show) {
     loadingEl.style.display = show ? 'block' : 'none';
+}
+
+function normalizeItemNumber(str) {
+    if (!str) return '';
+    return String(str)
+        .replace(/[\s\u200B-\u200D\uFEFF]/g, '')
+        .toLowerCase();
 }
 
 // ============================================
 // 5. FIREBASE QUERY
 // ============================================
-
-// Normalisasi string untuk perbandingan: lowercase + hapus semua whitespace
-// (termasuk whitespace "aneh" seperti non-breaking space / zero-width space)
-function normalizeItemNumber(str) {
-    if (!str) return '';
-    return String(str)
-        .replace(/[\s\u200B-\u200D\uFEFF]/g, '') // hapus spasi & zero-width chars
-        .toLowerCase();
-}
 
 async function fetchItemData(itemNumber) {
     showLoading(true);
@@ -119,10 +124,9 @@ async function fetchItemData(itemNumber) {
     try {
         const targetNormalized = normalizeItemNumber(itemNumber);
         
-        // Ambil SEMUA data dari node 'data_stok' lalu filter manual (case-insensitive & toleran whitespace)
-        // PENTING: data tersimpan di /data_stok/{pushId}, BUKAN langsung di root '/'
-        const snapshot = await db.ref('data_stok').once('value');
+        console.log('🔍 Mencari item:', itemNumber);
         
+        const snapshot = await db.ref('data_stok').once('value');
         const data = snapshot.val();
         
         if (!data) {
@@ -131,27 +135,25 @@ async function fetchItemData(itemNumber) {
             return;
         }
         
-        // Konversi ke array
         const allItems = Object.keys(data).map(key => ({
             id: key,
             ...data[key]
         }));
         
-        // Filter berdasarkan itemnumber yang sudah dinormalisasi
+        console.log('📊 Total data di DB:', allItems.length);
+        
         const items = allItems.filter(item => 
             normalizeItemNumber(item.itemnumber) === targetNormalized
         );
         
+        console.log('🎯 Item ditemukan:', items.length);
+        
         if (items.length === 0) {
-            console.warn('📌 Item tidak ditemukan. Target (normalized):', targetNormalized);
-            console.warn('📌 Contoh itemnumber yang ada di DB:', 
-                allItems.slice(0, 10).map(i => i.itemnumber));
             showError(`Item "${itemNumber}" tidak ditemukan!`);
             showLoading(false);
             return;
         }
         
-        // Filter yang punya tanggal valid
         const validItems = items.filter(item => item.tanggal);
         
         if (validItems.length === 0) {
@@ -160,20 +162,21 @@ async function fetchItemData(itemNumber) {
             return;
         }
         
-        // Sort by tanggal (descending - terbaru di atas)
+        // SORT DESCENDING (terbaru di atas)
         validItems.sort((a, b) => {
             const dateA = parseDateCustom(a.tanggal);
             const dateB = parseDateCustom(b.tanggal);
             return dateB - dateA;
         });
         
-        // Ambil 30 data terakhir
-        const last30 = validItems.slice(0, 30);
+        console.log('📅 Data setelah sorting (terbaru di atas):', 
+            validItems.map(i => `${i.tanggal} (${i.batch})`));
         
-        // Data terbaru
+        const last30 = validItems.slice(0, 30);
         const latest = last30[0];
         
-        // Tampilkan
+        console.log('✅ Data terbaru:', latest.tanggal, '-', latest.batch);
+        
         displayItemData(latest, itemNumber);
         displayHistory(last30);
         
@@ -199,7 +202,6 @@ function displayItemData(data, itemNumber) {
     remarkDisplay.textContent = data.remark || '-';
     tanggalDisplay.textContent = data.tanggal || '-';
     
-    // Tambahkan badge "Terbaru" di samping tanggal
     const tanggalLabel = document.querySelector('.tanggal-label');
     if (tanggalLabel) {
         tanggalLabel.innerHTML = `📅 Tanggal Update <span style="background: #2563eb; color: white; padding: 2px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; margin-left: 8px;">TERBARU</span>`;
@@ -212,7 +214,6 @@ function displayHistory(items) {
         return;
     }
     
-    // Items sudah terurut descending (terbaru di atas)
     let html = `
         <div class="history-table-wrapper">
             <table class="history-table">
@@ -229,8 +230,9 @@ function displayHistory(items) {
     
     items.forEach((item, index) => {
         const stok = item.stok ? item.stok + ' kg' : '-';
-        // Tandai data terbaru (index 0) dengan badge
-        const badge = index === 0 ? '<span style="background: #2563eb; color: white; padding: 2px 10px; border-radius: 12px; font-size: 11px; font-weight: 600;">TERBARU</span>' : '-';
+        const badge = index === 0 ? 
+            '<span style="background: #2563eb; color: white; padding: 2px 10px; border-radius: 12px; font-size: 11px; font-weight: 600;">TERBARU</span>' : 
+            '-';
         
         html += `
             <tr ${index === 0 ? 'style="background: #eff6ff;"' : ''}>
@@ -248,14 +250,13 @@ function displayHistory(items) {
         </div>
     `;
     
-    // Tambahkan info jumlah data dan rentang tanggal
     const totalData = items.length;
     const firstDate = items[0]?.tanggal || '-';
     const lastDate = items[items.length - 1]?.tanggal || '-';
     
     const infoText = totalData === 30 ? 
         `Menampilkan 30 data terakhir (${firstDate} s/d ${lastDate})` : 
-        `Menampilkan ${totalData} data (semua data tersedia) - (${firstDate} s/d ${lastDate})`;
+        `Menampilkan ${totalData} data (${firstDate} s/d ${lastDate})`;
     
     html += `<p style="margin-top: 12px; font-size: 12px; color: #6b7a8f; text-align: center;">📊 ${infoText}</p>`;
     
@@ -268,7 +269,6 @@ function displayHistory(items) {
 
 async function startScanner() {
     try {
-        // Cek dukungan kamera
         if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
             showError('Browser tidak mendukung akses kamera. Gunakan Chrome/Edge di HP.');
             return;
@@ -321,16 +321,9 @@ async function stopScanner() {
 }
 
 function onScanSuccess(decodedText) {
-    // ===== DEBUG: Tampilkan hasil scan =====
     console.log('📌 HASIL SCAN:', decodedText);
-    console.log('📌 PANJANG TEXT:', decodedText.length);
-    console.log('📌 KARAKTER:', decodedText.split('').map(c => c.charCodeAt(0)));
-    // =======================================
     
     const itemNumber = decodedText.trim();
-    
-    console.log('📌 SETELAH TRIM:', itemNumber);
-    console.log('📌 PANJANG SETELAH TRIM:', itemNumber.length);
     
     if (itemNumber) {
         stopScanner();
@@ -341,8 +334,7 @@ function onScanSuccess(decodedText) {
 }
 
 function onScanError(err) {
-    // Error scanning - ignore (ini normal)
-    // console.warn(err);
+    // ignore
 }
 
 // ============================================
@@ -352,26 +344,13 @@ function onScanError(err) {
 startBtn.addEventListener('click', startScanner);
 stopBtn.addEventListener('click', stopScanner);
 
-// ============================================
-// 9. CLEANUP
-// ============================================
-
 window.addEventListener('beforeunload', async () => {
     if (html5QrCode) {
         try {
             await html5QrCode.stop();
-        } catch (e) {
-            // ignore
-        }
+        } catch (e) {}
     }
 });
 
-// ============================================
-// 10. INITIALIZATION
-// ============================================
-
 console.log('✅ Aplikasi Scan QR Inventory siap!');
-console.log('📌 Pastikan konfigurasi Firebase sudah diisi di script.js');
-console.log('📌 Struktur data: /{pushId} dengan field: itemnumber, batch, itemname, remark, stok, tanggal');
-console.log('📌 Format tanggal: dd/mmm/yy (contoh: 01/Jul/26)');
-console.log('📌 QR Code berisi: itemnumber (contoh: R90878)');
+console.log('📌 Format tanggal: YYYY-MM-DD (contoh: 2026-07-01)');
