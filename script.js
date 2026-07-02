@@ -119,9 +119,9 @@ async function fetchItemData(itemNumber) {
     try {
         const targetNormalized = normalizeItemNumber(itemNumber);
         
-        // Ambil SEMUA data lalu filter manual (case-insensitive & toleran whitespace)
-        // Ini menggantikan query orderByChild().equalTo() yang exact-match & case-sensitive
-        const snapshot = await db.ref('/').once('value');
+        // Ambil SEMUA data dari node 'data_stok' lalu filter manual (case-insensitive & toleran whitespace)
+        // PENTING: data tersimpan di /data_stok/{pushId}, BUKAN langsung di root '/'
+        const snapshot = await db.ref('data_stok').once('value');
         
         const data = snapshot.val();
         
@@ -146,7 +146,7 @@ async function fetchItemData(itemNumber) {
             console.warn('📌 Item tidak ditemukan. Target (normalized):', targetNormalized);
             console.warn('📌 Contoh itemnumber yang ada di DB:', 
                 allItems.slice(0, 10).map(i => i.itemnumber));
-            showError(`Item "${itemNumber}" tidak ada!`);
+            showError(`Item "${itemNumber}" tidak ditemukan!`);
             showLoading(false);
             return;
         }
