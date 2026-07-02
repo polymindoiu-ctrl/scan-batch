@@ -126,7 +126,7 @@ async function fetchItemData(itemNumber) {
         const data = snapshot.val();
         
         if (!data) {
-            showError(`Item "${itemNumber}" tidak ditemukan!`);
+            showError(`Item "${itemNumber}" tidak ada!`);
             showLoading(false);
             return;
         }
